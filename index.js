@@ -21,10 +21,31 @@ n.getUserMedia( {audio: true}, function(liveStream){
 
 	var running = false;
 	var loopNodes = [];
+	var targetLength = null;
 
 
-
-	function getBufferCallback( buffers ) {
+	function getBufferCallback( buffers ) {		
+		if( buffers[0].length === 0 ){
+			return;
+		}
+		
+		if(targetLength){
+			var bufferLength = buffers[0].length;
+			if( bufferLength < targetLength ){
+				for( var i in buffers ){
+					var newBuffer = new Float32Array(targetLength);
+					newBuffer.set(buffers[i]);
+					buffers[i] = newBuffer;
+				}
+			} else if( bufferLength > targetLength ){
+				for( var i in buffers ){
+					buffers[i] = buffers[i].subarray(0, targetLength);
+				}
+			}
+		} else {
+			targetLength = buffers[0].length;
+		}
+		
 		var newSource = ctx.createBufferSource();
 		var newBuffer = ctx.createBuffer( 2, buffers[0].length, ctx.sampleRate );
 		newBuffer.getChannelData(0).set(buffers[0]);
@@ -41,13 +62,10 @@ n.getUserMedia( {audio: true}, function(liveStream){
 	var content = $("#content");
 
 	function start(){
-		content.
-				css("background-color","green").
-				css("opacity", 1).
-				animate({"opacity" : 0}, 1000);
 		// start recording
 		rec.record();
 		running = true;
+		flash("green");
 	}
 	
 	function next(){
@@ -56,37 +74,57 @@ n.getUserMedia( {audio: true}, function(liveStream){
 		rec.clear();
 		rec.record();
 		//mic.disconnect();
+		flash("blue");
 	}
 	
 	function stop(){
-		content.
-				css("background-color","red").
-				css("opacity", 1).
-				animate({"opacity" : 0}, 1000);
 		running = false;
 		rec.stop();
 		rec.getBuffer(getBufferCallback);
 		rec.clear();
+		flash("red");
 	}
 	
+	function clear(){
+		stop();
+		loopNodes.forEach(function(node){
+			node.disconnect();
+		});
+		loopNodes = [];
+		targetLength = null;
+	}
+	
+	function flash(color){
+		content.
+				css("background-color",color).
+				css("opacity", 1).
+				animate({"opacity" : 0}, 1000);
+	}
 	
 	$(document).on("keydown", function(ev){
-		if( ev.which === 32 ){
+		console.log(ev.which);
+		if( ev.which === 17 ){
+			stop();
+		} else if( ev.which === 27 ){
+			clear();
+		} else if( ev.which === 32 ){
 			if( running ){
-				stop();
+				next();
 			} else {
 				start();
 			}
 		}
 	});
-
-	$(document).on("click", function(ev){
-			if( running ){
-				stop();
-			} else {
-				start();
-			}
-	});
+	
+	function frame(time){
+		
+		
+		
+		requestAnimationFrame(frame);
+	}
+	
+	requestAnimationFrame(frame);
+	
 
 },function(){});
 
