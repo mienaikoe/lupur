@@ -36,3 +36,9 @@ h3{
     bottom: 0;
     right: 0;
 }
+
+.instructions{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
