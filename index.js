@@ -80,6 +80,14 @@ n.getUserMedia( {audio: true}, function(liveStream){
 		}
 	});
 
+	$(document).on("click", function(ev){
+			if( running ){
+				stop();
+			} else {
+				start();
+			}
+	});
+
 },function(){});
 
 
