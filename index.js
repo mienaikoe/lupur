@@ -59,7 +59,7 @@ n.getUserMedia( {audio: true}, function(liveStream){
 		content.html(loopNodes.length);
 	}
 
-	var content = $("#content");
+	var content = $(".flasher");
 
 	function start(){
 		// start recording
