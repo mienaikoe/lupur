@@ -60,3 +60,13 @@ h1, h3{
     z-index: 2;
     opacity: 0;
 }
+
+.instructions{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    text-align: left;
+    color: white;
+    font-family: sans-serif;
+}
+
